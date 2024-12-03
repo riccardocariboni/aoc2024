@@ -1,0 +1,37 @@
+;;;; aoc2024-d03.lisp
+(in-package #:aoc2024-d03)
+
+(defun parse-input (file)
+  (let ((out (uiop:read-file-lines file)))
+    out))
+
+(defun solve-p1 (file)
+  (let ((in (parse-input file))
+	(sum 0)
+	(pattern "mul\\((\\d+),(\\d+)\\)"))
+    (dolist (line in)
+      (dolist (m (cl-ppcre:all-matches-as-strings pattern line))
+	(let ((nums (let ((o nil))
+		      (dolist (n (cl-ppcre:all-matches-as-strings "\\d+" m))
+			(push (parse-integer n) o))
+		      o)))
+	  (setf sum (+ sum (* (first nums) (second nums)))))))
+    sum))
+
+(defun solve-p2 (file)
+  (let ((in (parse-input file))
+	(sum 0)
+	(pattern "mul\\(\\d+,\\d+\\)|don't\\(\\)|do\\(\\)")
+	(active t))
+    (dolist (line in)
+      (dolist (token (cl-ppcre:all-matches-as-strings pattern line))
+	(cond
+	  ((string= token "don't()") (setf active nil))
+	  ((string= token "do()") (setf active t))
+	  (t (if active
+		 (let ((nums (let ((o nil))
+			       (dolist (n (cl-ppcre:all-matches-as-strings "\\d+" token))
+				 (push (parse-integer n) o))
+			       o)))
+		   (setf sum (+ sum (* (first nums) (second nums))))))))))
+    sum))
