@@ -1,9 +1,8 @@
 # aoc2024
-### _Your Name <your.name@example.com>_
 
-This is a project to do ... something.
+Advent of Code 2024 problems in Common Lisp.
 
 ## License
 
-Specify license here
+GPL v3
 
