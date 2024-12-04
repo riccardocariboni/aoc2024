@@ -10,4 +10,5 @@
   :components ((:file "package")
                (:file "aoc2024-d01")
 	       (:file "aoc2024-d02")
-	       (:file "aoc2024-d03")))
+	       (:file "aoc2024-d03")
+	       (:file "aoc2024-d04")))

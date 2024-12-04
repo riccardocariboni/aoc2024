@@ -18,3 +18,9 @@
    :solve-p1
    :solve-p2))
 
+(defpackage #:aoc2024-d04
+  (:use #:cl)
+  (:export
+   :solve-p1
+   :solve-p2))
+

@@ -1,0 +1,92 @@
+;;;; aoc2024-d04.lisp
+
+(in-package #:aoc2024-d04)
+
+(defun parse-input (file)
+  (let ((in (uiop:read-file-lines file)))
+    in))
+
+(defun rotate-strings (strings)
+  (let ((char-lists (mapcar (lambda (str) (coerce str 'list)) strings)))
+    (mapcar (lambda (chars) (coerce chars 'string))
+            (apply #'mapcar #'list char-lists))))
+
+(defun rotate-strings-45 (strings fill-char)
+  (let* ((rows (length strings))
+         (cols (apply #'max (mapcar #'length strings)))
+         (result-length (+ rows cols -1)) ; Total diagonal rows
+         (padded-strings (mapcar (lambda (str)
+                                   (concatenate 'string str (make-string (- cols (length str)) :initial-element fill-char)))
+                                 strings))
+         (char-lists (mapcar (lambda (str) (coerce str 'list)) padded-strings))
+         (result (make-list result-length :initial-element nil)))
+    ;; Insert filler char in the diagonals
+    (dotimes (i rows)
+      (dotimes (j cols)
+        (let ((char (nth j (nth i char-lists))))
+          (setf (nth (+ i j) result)
+                (append (nth (+ i j) result) (list char))))))
+    ;; Convert each diagonal to a string
+    (mapcar (lambda (chars)
+              (coerce (mapcar (lambda (char) (or char fill-char)) chars) 'string))
+            result)))
+
+(defun rotate-strings-45-reverse (strings fill-char)
+  (let* ((rows (length strings))
+         (cols (apply #'max (mapcar #'length strings)))
+         (result-length (+ rows cols -1)) ; Total diagonal rows
+         (padded-strings (mapcar (lambda (str)
+                                   (concatenate 'string (make-string (- cols (length str)) :initial-element fill-char) str))
+                                 strings))
+         (char-lists (mapcar (lambda (str) (coerce str 'list)) padded-strings))
+         (result (make-list result-length :initial-element nil)))
+    ;; Populate reverse diagonals
+    (dotimes (i rows)
+      (dotimes (j cols)
+        (let ((char (nth j (nth i char-lists))))
+          (setf (nth (+ (- rows 1 i) j) result)
+                (append (nth (+ (- rows 1 i) j) result) (list char))))))
+    ;; Convert each diagonal to a string
+    (mapcar (lambda (chars)
+              (coerce (mapcar (lambda (char) (or char fill-char)) chars) 'string))
+            result)))
+
+(defun solve-p1 (file)
+  (let ((pattern "XMAS|SAMX")
+	(count 0)
+	(lines (parse-input file)))
+    (dolist (line lines)
+      (setf count (+ count (length (cl-ppcre:all-matches pattern line)))))
+    (setf lines (rotate-strings lines))
+    (dolist (line lines)
+      (setf count (+ count (length (cl-ppcre:all-matches pattern line)))))
+    (setf lines (rotate-strings-45 lines #\.))
+    (dolist (line lines)
+      (setf count (+ count (length (cl-ppcre:all-matches pattern line)))))
+    (setf lines (parse-input file))
+    (setf lines (rotate-strings-45-reverse lines #\.))
+    (dolist (line lines)
+      (setf count (+ count (length (cl-ppcre:all-matches pattern line)))))
+    count))
+
+(defun xmas? (column line lines)
+  (and (or (and (char= (elt (nth (1- line) lines) (1- column)) #\S)
+		(char= (elt (nth (1+ line) lines) (1+ column)) #\M))
+	   (and (char= (elt (nth (1- line) lines) (1- column)) #\M)
+		(char= (elt (nth (1+ line) lines) (1+ column)) #\S)))
+       (or (and (char= (elt (nth (1- line) lines) (1+ column)) #\S)
+		(char= (elt (nth (1+ line) lines) (1- column)) #\M))
+	   (and (char= (elt (nth (1- line) lines) (1+ column)) #\M)
+		(char= (elt (nth (1+ line) lines) (1- column)) #\S)))))
+
+(defun solve-p2 (file)
+  (let ((lines (parse-input file))
+	(count 0))
+    (loop :for column :from 1 :to (- (length (first lines)) 2)
+	  :do
+	     (loop :for line :from 1 :to (- (length lines) 2)
+		   :do
+		      (if (char= (elt (nth line lines) column) #\A)
+			  (if (xmas? column line lines)
+			      (setf count (1+ count))))))
+    count))
