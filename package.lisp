@@ -29,7 +29,15 @@
   (:export
    :solve-p1-and-p2))
 
-(defpackage #aoc2024-d06
+(defpackage #:aoc2024-d06
   (:use #:cl)
-  )
+  (:export
+   :solve-p1
+   :solve-p2))
+
+(defpackage #:aoc2024-d07
+  (:use #:cl)
+  (:export
+   :solve-p1
+   :solve-p2))
 
