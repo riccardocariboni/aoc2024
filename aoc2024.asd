@@ -14,4 +14,5 @@
 	       (:file "aoc2024-d04")
 	       (:file "aoc2024-d05")
 	       (:file "aoc2024-d06")
-	       (:file "aoc2024-d07")))
+	       (:file "aoc2024-d07")
+	       (:file "aoc2024-d08")))
